@@ -1,0 +1,57 @@
+#database:
+#  driverClass: com.mysql.cj.jdbc.Driver
+#  url: jdbc:mysql://localhost/libraryDB
+#  user: root
+##  password:
+#  maxWaitForConnection: 1s
+#  validationQuery: "SELECT 1"
+#  validationQueryTimeout: 3s
+#  minSize: 8
+#  maxSize: 32
+#  checkConnectionWhileIdle: false
+#  evictionInterval: 10s
+#  minIdleTime: 1 minute
+#  checkConnectionOnBorrow: true
+env: "dev"
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+  enableThreadNameFilter: true
+  maxThreads: 1024
+  # rootPath: /
+  type: default
+
+logging:
+  level: INFO
+  loggers:
+    com.libraryManagement: DEBUG
+
+
+libraryDatabase:
+  checkConnectionWhileIdle: true
+  driverClass: com.mysql.cj.jdbc.Driver
+  evictionInterval: 10s
+  maxSize: 32
+  maxWaitForConnection: 1s
+  minIdleTime: "1 minute"
+  minSize: 8
+  #  password: password
+  properties:
+    charSet: UTF-8
+  url: "jdbc:mysql://localhost/library?allowPublicKeyRetrieval=true&useSSL=false"
+  user: root
+  validationQuery: "SELECT 1"
+  validationQueryTimeout: 3s
+
+httpClient:
+  timeout: 5000ms
+  connectionTimeout: 5000ms
+  timeToLive: 1h
+  cookiesEnabled: false
+  maxConnections: 1024
+  maxConnectionsPerRoute: 1024
+  keepAlive: 0ms
+  retries: 0
+  userAgent: library-management
