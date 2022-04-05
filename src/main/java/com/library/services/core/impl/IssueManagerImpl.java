@@ -12,12 +12,16 @@ import java.util.List;
 
 @Slf4j
 public class IssueManagerImpl {
+    private final IssueDAO issueDAO;
+    private final BookDAO bookDAO;
+    private final UserDAO userDAO;
+
     @Inject
-    private IssueDAO issueDAO;
-    @Inject
-    private BookDAO bookDAO;
-    @Inject
-    private UserDAO userDAO;
+    public IssueManagerImpl(IssueDAO issueDAO, BookDAO bookDAO, UserDAO userDAO) {
+        this.issueDAO = issueDAO;
+        this.bookDAO = bookDAO;
+        this.userDAO = userDAO;
+    }
 
     public int issueBook(Issue issue) {
         validate(issue);

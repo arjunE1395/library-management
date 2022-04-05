@@ -14,8 +14,12 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/admin")
 public class UserResource {
+    private final UserManagerImpl userManager;
+
     @Inject
-    private UserManagerImpl userManager;
+    public UserResource(UserManagerImpl userManager) {
+        this.userManager = userManager;
+    }
 
     @GET
     @Path("/user/view")

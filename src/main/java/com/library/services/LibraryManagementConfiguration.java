@@ -10,7 +10,6 @@ import javax.validation.constraints.*;
 
 @Data
 public class LibraryManagementConfiguration extends Configuration {
-    // TODO: implement service configuration
     @JsonProperty("defaultName")
     private String defaultName = "LibraryManagement";
 

@@ -14,8 +14,12 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/booking")
 public class IssueResource {
+    private final IssueManagerImpl issueManager;
+
     @Inject
-    private IssueManagerImpl issueManager;
+    public IssueResource(IssueManagerImpl issueManager) {
+        this.issueManager = issueManager;
+    }
 
     @POST
     @Path("/issue")

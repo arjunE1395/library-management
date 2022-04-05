@@ -7,11 +7,16 @@ import com.library.services.db.dao.IssueDAO;
 import com.library.services.db.dao.UserDAO;
 
 public class AppModule extends AbstractModule {
+    private DAOFactory daoFactory;
+
+    public AppModule(DAOFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
 
     @Override
     protected void configure() {
-        bind(BookDAO.class).toInstance(DAOFactory.getInstance().getBookDAO());
-        bind(UserDAO.class).toInstance(DAOFactory.getInstance().getUserDAO());
-        bind(IssueDAO.class).toInstance(DAOFactory.getInstance().getIssueDAO());
+        bind(BookDAO.class).toInstance(daoFactory.getBookDAO());
+        bind(UserDAO.class).toInstance(daoFactory.getUserDAO());
+        bind(IssueDAO.class).toInstance(daoFactory.getIssueDAO());
     }
 }

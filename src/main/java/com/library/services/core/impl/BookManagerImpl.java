@@ -11,8 +11,12 @@ import javax.ws.rs.WebApplicationException;
 
 @Slf4j
 public class BookManagerImpl {
+    private final BookDAO bookDAO;
+
     @Inject
-    private BookDAO bookDAO;
+    public BookManagerImpl(BookDAO bookDAO) {
+        this.bookDAO = bookDAO;
+    }
 
     public Object viewBook(Integer book_id) {
         if (book_id == null) {

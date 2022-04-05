@@ -14,8 +14,12 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/admin")
 public class BookResource {
+    private final BookManagerImpl bookManager;
+
     @Inject
-    private BookManagerImpl bookManager;
+    public BookResource(BookManagerImpl bookManager){
+        this.bookManager = bookManager;
+    }
 
     @GET
     @Path("/book/view")

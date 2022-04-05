@@ -12,29 +12,13 @@ import com.library.services.db.dao.IssueDAO;
 import com.library.services.db.dao.UserDAO;
 
 @Getter
-public final class DAOFactory {
-    private BookDAO bookDAO;
-    private UserDAO userDAO;
-    private IssueDAO issueDAO;
-    private LibraryManagementConfiguration configuration;
-    private Environment environment;
-    private static Jdbi jdbi;
-    private static final DAOFactory INSTANCE = new DAOFactory();
+public class DAOFactory {
+    private final BookDAO bookDAO;
+    private final UserDAO userDAO;
+    private final IssueDAO issueDAO;
 
-    private DAOFactory() {
-    }
-    public static DAOFactory getInstance() {
-        return INSTANCE;
-    }
-
-    public void init(Environment environment, LibraryManagementConfiguration configuration) {
-
-        if (INSTANCE.configuration == null && INSTANCE.environment == null) {
-            INSTANCE.configuration = configuration;
-            INSTANCE.environment = environment;
-            jdbi = new JdbiFactory().build(environment, configuration.getLibraryManagementDataSourceFactory(), "libraryDB");
-        }
-
+    public DAOFactory(Environment environment, LibraryManagementConfiguration configuration) {
+        Jdbi jdbi = new JdbiFactory().build(environment, configuration.getLibraryManagementDataSourceFactory(), "libraryDB");
         bookDAO = jdbi.onDemand(BookDAO.class);
         userDAO = jdbi.onDemand(UserDAO.class);
         issueDAO = jdbi.onDemand(IssueDAO.class);

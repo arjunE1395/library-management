@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.library.services.db.DAOFactory;
 import com.library.services.module.AppModule;
-import com.library.services.provider.AppConfigProvider;
 import com.library.services.resources.IssueResource;
 import com.library.services.resources.UserResource;
 import io.dropwizard.Application;
@@ -61,11 +60,9 @@ public class LibraryManagementApplication extends Application<LibraryManagementC
     @Override
     public void run(final LibraryManagementConfiguration configuration,
                     final Environment environment) {
-        AppConfigProvider.getInstance().init(configuration);
-        DAOFactory.getInstance().init(environment, configuration);
 
         /* Dependency Injection */
-        Injector injector = Guice.createInjector(new AppModule());
+        Injector injector = Guice.createInjector(new AppModule(new DAOFactory(environment, configuration)));
 
         log.info("Http client connection timeout [{}] time out [{}] request timeout [{}]",
                 configuration.getHttpClientConfig().getConnectionTimeout(),

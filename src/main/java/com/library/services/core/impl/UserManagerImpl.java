@@ -11,8 +11,12 @@ import javax.ws.rs.WebApplicationException;
 
 @Slf4j
 public class UserManagerImpl {
+    private final UserDAO userDAO;
+
     @Inject
-    private UserDAO userDAO;
+    public UserManagerImpl(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     public Object viewUser(Integer user_id) {
         if (user_id == null) {
