@@ -1,6 +1,7 @@
 package com.library.services.resources;
 
-import com.library.services.core.managers.IssueManager;
+import com.google.inject.Inject;
+import com.library.services.core.impl.IssueManagerImpl;
 import com.library.services.db.dto.Issue;
 
 import javax.validation.Valid;
@@ -13,11 +14,8 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/booking")
 public class IssueResource {
-    private final IssueManager issueManager;
-
-    public IssueResource(IssueManager issueManager) {
-        this.issueManager = issueManager;
-    }
+    @Inject
+    private IssueManagerImpl issueManager;
 
     @POST
     @Path("/issue")

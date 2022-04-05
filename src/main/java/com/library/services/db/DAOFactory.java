@@ -1,5 +1,6 @@
 package com.library.services.db;
 
+import com.google.inject.Inject;
 import io.dropwizard.setup.Environment;
 import lombok.Getter;
 
@@ -10,37 +11,32 @@ import com.library.services.db.dao.BookDAO;
 import com.library.services.db.dao.IssueDAO;
 import com.library.services.db.dao.UserDAO;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Getter
 public final class DAOFactory {
-    private Jdbi jdbi;
-    private Map<String, Object> daoMap = new HashMap<>();
+    private BookDAO bookDAO;
+    private UserDAO userDAO;
+    private IssueDAO issueDAO;
+    private LibraryManagementConfiguration configuration;
+    private Environment environment;
+    private static Jdbi jdbi;
+    private static final DAOFactory INSTANCE = new DAOFactory();
 
-    public DAOFactory(Environment environment, LibraryManagementConfiguration configuration) {
-        final JdbiFactory factory = new JdbiFactory();
-        jdbi = factory.build(environment, configuration.getLibraryManagementDataSourceFactory(), "libraryDB");
-        populateDAOMap();
+    private DAOFactory() {
+    }
+    public static DAOFactory getInstance() {
+        return INSTANCE;
     }
 
-    private void populateDAOMap() {
-        if (daoMap != null) {
-            daoMap.put(BookDAO.class.getCanonicalName(), jdbi.onDemand(BookDAO.class));
-            daoMap.put(UserDAO.class.getCanonicalName(), jdbi.onDemand(UserDAO.class));
-            daoMap.put(IssueDAO.class.getCanonicalName(), jdbi.onDemand(IssueDAO.class));
+    public void init(Environment environment, LibraryManagementConfiguration configuration) {
+
+        if (INSTANCE.configuration == null && INSTANCE.environment == null) {
+            INSTANCE.configuration = configuration;
+            INSTANCE.environment = environment;
+            jdbi = new JdbiFactory().build(environment, configuration.getLibraryManagementDataSourceFactory(), "libraryDB");
         }
-    }
 
-    public BookDAO getBookDAO() {
-        return (BookDAO) daoMap.get(BookDAO.class.getCanonicalName());
-    }
-
-    public UserDAO getUserDAO() {
-        return (UserDAO) daoMap.get(UserDAO.class.getCanonicalName());
-    }
-
-    public IssueDAO getIssueDAO() {
-        return (IssueDAO) daoMap.get(IssueDAO.class.getCanonicalName());
+        bookDAO = jdbi.onDemand(BookDAO.class);
+        userDAO = jdbi.onDemand(UserDAO.class);
+        issueDAO = jdbi.onDemand(IssueDAO.class);
     }
 }
