@@ -30,7 +30,10 @@ public class BookManagerImpl {
         } else {
             return bookRMap.computeIfAbsent(
                     book_id,
-                    book -> bookDAO.findById(book_id).get()
+                    book -> bookDAO.findById(book_id).orElseThrow(() -> {
+                        log.info("Invalid Book-ID");
+                        throw new WebApplicationException("Invalid Book-ID : " + book_id,400);
+                    })
             );
         }
     }

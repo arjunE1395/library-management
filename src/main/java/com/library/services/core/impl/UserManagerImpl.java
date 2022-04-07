@@ -30,7 +30,10 @@ public class UserManagerImpl {
         } else {
             return  userRMap.computeIfAbsent(
                     user_id,
-                    user -> userDAO.findById(user_id).get()
+                    user -> userDAO.findById(user_id).orElseThrow(() -> {
+                        log.info("Invalid User-ID");
+                        throw new WebApplicationException("Invalid User-ID: " + user_id,400);
+                    })
             );
         }
     }
