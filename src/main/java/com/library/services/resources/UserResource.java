@@ -1,6 +1,7 @@
 package com.library.services.resources;
 
-import com.library.services.core.managers.UserManager;
+import com.google.inject.Inject;
+import com.library.services.core.impl.UserManagerImpl;
 import com.library.services.db.dto.User;
 
 import javax.validation.Valid;
@@ -13,9 +14,10 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/admin")
 public class UserResource {
-    private final UserManager userManager;
+    private final UserManagerImpl userManager;
 
-    public UserResource(UserManager userManager) {
+    @Inject
+    public UserResource(UserManagerImpl userManager) {
         this.userManager = userManager;
     }
 

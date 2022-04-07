@@ -1,6 +1,7 @@
 package com.library.services.resources;
 
-import com.library.services.core.managers.BookManager;
+import com.google.inject.Inject;
+import com.library.services.core.impl.BookManagerImpl;
 import com.library.services.db.dto.Book;
 
 import javax.validation.Valid;
@@ -13,9 +14,10 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/admin")
 public class BookResource {
-    private final BookManager bookManager;
+    private final BookManagerImpl bookManager;
 
-    public BookResource(BookManager bookManager) {
+    @Inject
+    public BookResource(BookManagerImpl bookManager){
         this.bookManager = bookManager;
     }
 

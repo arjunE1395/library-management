@@ -1,6 +1,6 @@
 package com.library.services.core.impl;
 
-import com.library.services.core.managers.IssueManager;
+import com.google.inject.Inject;
 import com.library.services.db.dao.BookDAO;
 import com.library.services.db.dao.IssueDAO;
 import com.library.services.db.dao.UserDAO;
@@ -11,31 +11,29 @@ import javax.ws.rs.WebApplicationException;
 import java.util.List;
 
 @Slf4j
-public class IssueManagerImpl implements IssueManager {
+public class IssueManagerImpl {
     private final IssueDAO issueDAO;
     private final BookDAO bookDAO;
     private final UserDAO userDAO;
 
+    @Inject
     public IssueManagerImpl(IssueDAO issueDAO, BookDAO bookDAO, UserDAO userDAO) {
         this.issueDAO = issueDAO;
         this.bookDAO = bookDAO;
         this.userDAO = userDAO;
     }
 
-    @Override
     public int issueBook(Issue issue) {
         validate(issue);
         isBookAvailable(issue);
         return issueDAO.create(issue);
     }
 
-    @Override
     public void returnBook(Integer issueID) {
         isIssueAvailable(issueID);
         issueDAO.delete(issueID);
     }
 
-    @Override
     public List<Issue> getBooksIssuedByUser(Integer userID) {
         userDAO.findById(userID)
                 .orElseThrow(() -> {

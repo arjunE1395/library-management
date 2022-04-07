@@ -1,14 +1,12 @@
 package com.library.services;
 
-import com.library.services.core.impl.BookManagerImpl;
-import com.library.services.core.impl.IssueManagerImpl;
-import com.library.services.core.impl.UserManagerImpl;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.library.services.db.DAOFactory;
-import com.library.services.provider.AppConfigProvider;
+import com.library.services.module.AppModule;
 import com.library.services.resources.IssueResource;
 import com.library.services.resources.UserResource;
 import io.dropwizard.Application;
-import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.PooledDataSourceFactory;
@@ -16,7 +14,6 @@ import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.HttpClient;
 import com.library.services.resources.BookResource;
 
 @Slf4j
@@ -63,26 +60,22 @@ public class LibraryManagementApplication extends Application<LibraryManagementC
     @Override
     public void run(final LibraryManagementConfiguration configuration,
                     final Environment environment) {
-        AppConfigProvider.getInstance().init(configuration);
 
-        final DAOFactory daoFactory = new DAOFactory(environment, configuration);
-
-        final HttpClient httpClient = new HttpClientBuilder(environment)
-                .using(configuration.getHttpClientConfig())
-                .build(getName());
+        /* Dependency Injection */
+        Injector injector = Guice.createInjector(new AppModule(new DAOFactory(environment, configuration)));
 
         log.info("Http client connection timeout [{}] time out [{}] request timeout [{}]",
                 configuration.getHttpClientConfig().getConnectionTimeout(),
                 configuration.getHttpClientConfig().getTimeout(),
                 configuration.getHttpClientConfig().getConnectionRequestTimeout());
 
-        BookManagerImpl bookManager = new BookManagerImpl(daoFactory.getBookDAO());
-        UserManagerImpl userManager = new UserManagerImpl(daoFactory.getUserDAO());
-        IssueManagerImpl issueManager = new IssueManagerImpl(daoFactory.getIssueDAO(), daoFactory.getBookDAO(), daoFactory.getUserDAO());
+        BookResource bookResource = injector.getInstance(BookResource.class);
+        UserResource userResource = injector.getInstance(UserResource.class);
+        IssueResource issueResource = injector.getInstance(IssueResource.class);
 
-        environment.jersey().register(new BookResource(bookManager));
-        environment.jersey().register(new UserResource(userManager));
-        environment.jersey().register(new IssueResource(issueManager));
+        environment.jersey().register(bookResource);
+        environment.jersey().register(userResource);
+        environment.jersey().register(issueResource);
 
         log.info("Configured LibraryManagement");
     }
