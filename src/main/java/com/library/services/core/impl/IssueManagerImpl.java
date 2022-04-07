@@ -4,44 +4,61 @@ import com.google.inject.Inject;
 import com.library.services.db.dao.BookDAO;
 import com.library.services.db.dao.IssueDAO;
 import com.library.services.db.dao.UserDAO;
+import com.library.services.db.dto.Book;
 import com.library.services.db.dto.Issue;
+import com.library.services.managed.DistributedCacheProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RMap;
 
 import javax.ws.rs.WebApplicationException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class IssueManagerImpl {
     private final IssueDAO issueDAO;
     private final BookDAO bookDAO;
     private final UserDAO userDAO;
+    private final DistributedCacheProvider distributedCacheProvider;
+    private RMap<String, List<Book>> userBookRMap;
 
     @Inject
-    public IssueManagerImpl(IssueDAO issueDAO, BookDAO bookDAO, UserDAO userDAO) {
+    public IssueManagerImpl(IssueDAO issueDAO, BookDAO bookDAO, UserDAO userDAO, DistributedCacheProvider distributedCacheProvider) {
         this.issueDAO = issueDAO;
         this.bookDAO = bookDAO;
         this.userDAO = userDAO;
+        this.distributedCacheProvider = distributedCacheProvider;
+        userBookRMap = distributedCacheProvider.getUserBookMap();
     }
 
-    public int issueBook(Issue issue) {
+    public String issueBook(Issue issue) {
         validate(issue);
         isBookAvailable(issue);
-        return issueDAO.create(issue);
+        String issue_id = issueDAO.create(issue);
+        userBookRMap.remove(issue.getUserID());
+        return issue_id;
     }
 
-    public void returnBook(Integer issueID) {
-        isIssueAvailable(issueID);
-        issueDAO.delete(issueID);
+    public void returnBook(String issueID) {
+        Issue issue = isIssueAvailable(issueID);
+        issueDAO.delete(issue.getId());
+        userBookRMap.remove(issue.getUserID());
     }
 
-    public List<Issue> getBooksIssuedByUser(Integer userID) {
+    public List<Book> getBooksIssuedByUser(String userID) {
         userDAO.findById(userID)
                 .orElseThrow(() -> {
                     log.info("Invalid User");
                     throw new WebApplicationException("Invalid User",400);
                 });
 
-        return issueDAO.findByUserId(userID);
+        return userBookRMap.computeIfAbsent(
+                userID,
+                bookList ->
+                     issueDAO.findBookByUserId(userID)
+                             .stream().map(bookID -> bookDAO.findById(bookID).get())
+                             .collect(Collectors.toList())
+        );
     }
 
     private void validate(Issue issue) {
@@ -65,8 +82,8 @@ public class IssueManagerImpl {
         }
     }
 
-    private void isIssueAvailable(Integer issueID) {
-        issueDAO.findById(issueID)
+    private Issue isIssueAvailable(String issueID) {
+        return issueDAO.findById(issueID)
                 .orElseThrow(() -> {
                     log.info("Invalid Issue");
                     throw new WebApplicationException("Invalid Issue",400);

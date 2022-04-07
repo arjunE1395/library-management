@@ -9,8 +9,8 @@ public class IssueMapper extends BaseRowMapper<Issue> {
     @Override
     Issue map(ResultSet resultSet) throws SQLException {
         return new Issue(
-                resultSet.getInt("BOOK_ID"),
-                resultSet.getInt("USER_ID")
+                resultSet.getString("BOOK_ID"),
+                resultSet.getString("USER_ID")
         );
     }
 }

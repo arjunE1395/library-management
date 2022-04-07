@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Issue extends BaseDTO {
     protected static final long serialVersionUID = 1234L;
-    private int bookID;
-    private int userID;
+    private String bookID;
+    private String userID;
 }

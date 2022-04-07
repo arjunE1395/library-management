@@ -23,7 +23,7 @@ public class BookResource {
 
     @GET
     @Path("/book/view")
-    public Response viewBook(@QueryParam("book_id") Integer bookID) {
+    public Response viewBook(@QueryParam("book_id") String bookID) {
         return Response.ok(bookManager.viewBook(bookID)).build();
     }
 

@@ -19,7 +19,7 @@ public interface UserDAO {
     List<User> findAll();
 
     @SqlQuery("SELECT * FROM USERS WHERE ID = :id")
-    Optional<User> findById(@Bind("id") int id);
+    Optional<User> findById(@Bind("id") String id);
 
     @SqlQuery("SELECT * FROM USERS WHERE NAME = :name")
     Optional<User> findByName(@Bind("name") String name);
@@ -30,8 +30,8 @@ public interface UserDAO {
     @SqlUpdate("INSERT INTO USERS(ID, NAME, EMAIL) " +
             "VALUES(:id, :name, :email)")
     @GetGeneratedKeys
-    int create(@BindBean User user);
+    String create(@BindBean User user);
 
     @SqlUpdate("DELETE FROM USERS WHERE ID = :id")
-    void delete(@Bind("id") int id);
+    void delete(@Bind("id") String id);
 }

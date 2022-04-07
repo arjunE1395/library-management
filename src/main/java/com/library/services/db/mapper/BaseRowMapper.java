@@ -12,7 +12,7 @@ public abstract class BaseRowMapper<T extends BaseDTO> implements RowMapper<T> {
 
     @Override
     public T map(ResultSet resultSet, StatementContext ctx) throws SQLException {
-        int id = resultSet.getInt("ID");
+        String id = resultSet.getString("ID");
         int status = resultSet.getInt("STATUS");
         Date createdAt = resultSet.getTimestamp("CREATED_AT");
         Date modifiedAt = resultSet.getTimestamp("MODIFIED_AT");

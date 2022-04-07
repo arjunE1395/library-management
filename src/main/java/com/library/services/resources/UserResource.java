@@ -23,7 +23,7 @@ public class UserResource {
 
     @GET
     @Path("/user/view")
-    public Response viewUser(@QueryParam("user_id") Integer userID) {
+    public Response viewUser(@QueryParam("user_id") String userID) {
         return Response.ok(userManager.viewUser(userID)).build();
     }
 

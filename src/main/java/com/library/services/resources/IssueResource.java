@@ -29,14 +29,14 @@ public class IssueResource {
 
     @DELETE
     @Path("/return/{issue_id}")
-    public Response returnBook(@PathParam("issue_id") int issueID) {
+    public Response returnBook(@PathParam("issue_id") String issueID) {
         issueManager.returnBook(issueID);
         return Response.ok().build();
     }
 
     @GET
     @Path("/show/{user_id}")
-    public Response issuedUserBooks(@PathParam("user_id") int userID) {
+    public Response issuedUserBooks(@PathParam("user_id") String userID) {
         return Response.ok(issueManager.getBooksIssuedByUser(userID)).build();
     }
 }

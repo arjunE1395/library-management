@@ -3,6 +3,7 @@ package com.library.services;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.library.services.db.DAOFactory;
+import com.library.services.managed.DistributedCacheProvider;
 import com.library.services.module.AppModule;
 import com.library.services.resources.IssueResource;
 import com.library.services.resources.UserResource;
@@ -10,11 +11,13 @@ import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.PooledDataSourceFactory;
+import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 import com.library.services.resources.BookResource;
+import org.redisson.config.Config;
 
 @Slf4j
 public class LibraryManagementApplication extends Application<LibraryManagementConfiguration> {
@@ -60,9 +63,12 @@ public class LibraryManagementApplication extends Application<LibraryManagementC
     @Override
     public void run(final LibraryManagementConfiguration configuration,
                     final Environment environment) {
+        DAOFactory daoFactory = new DAOFactory(environment, configuration);
+        Config cacheConfig = configuration.getDistributedCacheConfig();
+        DistributedCacheProvider distributedCacheProvider = new DistributedCacheProvider(cacheConfig);
 
         /* Dependency Injection */
-        Injector injector = Guice.createInjector(new AppModule(new DAOFactory(environment, configuration)));
+        Injector injector = Guice.createInjector(new AppModule(daoFactory,distributedCacheProvider));
 
         log.info("Http client connection timeout [{}] time out [{}] request timeout [{}]",
                 configuration.getHttpClientConfig().getConnectionTimeout(),
@@ -73,6 +79,7 @@ public class LibraryManagementApplication extends Application<LibraryManagementC
         UserResource userResource = injector.getInstance(UserResource.class);
         IssueResource issueResource = injector.getInstance(IssueResource.class);
 
+        environment.lifecycle().manage(distributedCacheProvider);
         environment.jersey().register(bookResource);
         environment.jersey().register(userResource);
         environment.jersey().register(issueResource);
