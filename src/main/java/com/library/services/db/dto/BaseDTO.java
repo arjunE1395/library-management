@@ -18,7 +18,7 @@ import java.util.Date;
 public abstract class BaseDTO implements Serializable {
     protected static final long serialVersionUID = 1234L;
 
-    private int id;
+    private String id;
     private int status;
     @JsonIgnore
     private Date createdAt;

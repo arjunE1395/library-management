@@ -19,7 +19,7 @@ public interface BookDAO {
     List<Book> findAll();
 
     @SqlQuery("SELECT * FROM BOOKS WHERE ID = :id")
-    Optional<Book> findById(@Bind("id") int id);
+    Optional<Book> findById(@Bind("id") String id);
 
     @SqlQuery("SELECT * FROM BOOKS WHERE NAME = :name")
     Optional<Book> findByName(@Bind("name") String name);
@@ -30,8 +30,8 @@ public interface BookDAO {
     @SqlUpdate("INSERT INTO BOOKS(ID, NAME, AUTHOR, ISBN) " +
                "VALUES(:id, :name, :author, :isbn)")
     @GetGeneratedKeys
-    int create(@BindBean Book book);
+    String create(@BindBean Book book);
 
     @SqlUpdate("DELETE FROM BOOKS WHERE ID = :id")
-    void delete(@Bind("id") int id);
+    void delete(@Bind("id") String id);
 }
